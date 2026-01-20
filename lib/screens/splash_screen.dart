@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../components/scribe_logo.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -11,9 +12,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Automatically navigate to home after 2 seconds
+
     Future.delayed(const Duration(seconds: 1), () {
-      Navigator.pushReplacementNamed(context, '/login'); // or /home if already logged in
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/login');
     });
   }
 
@@ -23,19 +25,32 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF7F00FF), Color(0xFFE100FF)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF6A11CB),
+              Color(0xFF2575FC),
+            ],
           ),
         ),
-        child: const Center(
-          child: Text(
-            'LawScribe AI',
-            style: TextStyle(
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              /// Same logo used in ChatScreen header
+              ScribeLogo(height: 90),
+
+              SizedBox(height: 16),
+
+              Text(
+                "Your AI Legal Assistant",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white70,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
           ),
         ),
       ),

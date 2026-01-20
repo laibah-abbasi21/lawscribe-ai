@@ -10,11 +10,8 @@ class ChatBubble extends StatelessWidget {
   final bool delivered;
   final bool isTyping;
 
-  // User icons
   final VoidCallback? onCopy;
   final VoidCallback? onEdit;
-
-  // AI icons
   final VoidCallback? onDislike;
   final VoidCallback? onShare;
 
@@ -38,8 +35,9 @@ class ChatBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    // 🔥 FIXED USER COLOR (NO FADE)
     final bubbleColor = isUser
-        ? (isDark ? Colors.deepPurple : Colors.deepPurple.shade100)
+        ? Colors.deepPurple
         : (isDark ? Colors.grey.shade800 : Colors.grey.shade200);
 
     final textColor = isUser
@@ -71,7 +69,7 @@ class ChatBubble extends StatelessWidget {
                 Container(
                   constraints: BoxConstraints(maxWidth: maxWidth),
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   decoration: BoxDecoration(
                     color: bubbleColor,
                     borderRadius: BorderRadius.only(
@@ -88,48 +86,60 @@ class ChatBubble extends StatelessWidget {
                     children: [
                       if (isTyping)
                         Row(
-                          mainAxisSize: MainAxisSize.min,
                           children: const [
                             SizedBox(
-                              width: 6,
-                              height: 6,
-                              child:
-                                  CircularProgressIndicator(strokeWidth: 2),
+                              width: 14,
+                              height: 14,
+                              child: CircularProgressIndicator(strokeWidth: 2),
                             ),
-                            SizedBox(width: 6),
-                            Text('Typing...'),
+                            SizedBox(width: 8),
+                            Text("Typing...", style: TextStyle(color: Colors.white70)),
                           ],
                         )
                       else if (fileName != null)
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Row(
                           children: [
-                            Text(
-                              fileName!,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: textColor),
-                              overflow: TextOverflow.ellipsis,
+                            Icon(
+                              fileName!.endsWith('.pdf')
+                                  ? Icons.picture_as_pdf
+                                  : Icons.description,
+                              color: Colors.white,
                             ),
-                            Text(
-                              '$fileSize KB',
-                              style: TextStyle(
-                                  color: textColor.withOpacity(0.7)),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    fileName!,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: textColor),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    '$fileSize KB',
+                                    style: TextStyle(
+                                        fontSize: 11,
+                                        color: textColor.withOpacity(0.8)),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         )
                       else if (message != null)
                         Text(message!, style: TextStyle(color: textColor)),
-                      const SizedBox(height: 4),
+
+                      const SizedBox(height: 6),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             time,
                             style: TextStyle(
                                 fontSize: 10,
-                                color: textColor.withOpacity(0.6)),
+                                color: textColor.withOpacity(0.7)),
                           ),
                           if (isUser && delivered)
                             const Padding(
@@ -142,46 +152,26 @@ class ChatBubble extends StatelessWidget {
                     ],
                   ),
                 ),
+
                 const SizedBox(height: 4),
 
-                // ================= ACTION ICONS WITH HOVER =================
                 Row(
                   mainAxisAlignment:
                       isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
                   children: isUser
                       ? [
                           if (onCopy != null)
-                            _HoverIcon(
-                              icon: Icons.copy_outlined,
-                              tooltip: "Copy",
-                              onTap: onCopy!,
-                            ),
+                            _HoverIcon(icon: Icons.copy_outlined, tooltip: "Copy", onTap: onCopy!),
                           if (onEdit != null)
-                            _HoverIcon(
-                              icon: Icons.edit_outlined,
-                              tooltip: "Edit",
-                              onTap: onEdit!,
-                            ),
+                            _HoverIcon(icon: Icons.edit_outlined, tooltip: "Edit", onTap: onEdit!),
                         ]
                       : [
                           if (onDislike != null)
-                            _HoverIcon(
-                              icon: Icons.thumb_down_alt_outlined,
-                              tooltip: "Dislike",
-                              onTap: onDislike!,
-                            ),
+                            _HoverIcon(icon: Icons.thumb_down_alt_outlined, tooltip: "Dislike", onTap: onDislike!),
                           if (onCopy != null)
-                            _HoverIcon(
-                              icon: Icons.copy_outlined,
-                              tooltip: "Copy",
-                              onTap: onCopy!,
-                            ),
+                            _HoverIcon(icon: Icons.copy_outlined, tooltip: "Copy", onTap: onCopy!),
                           if (onShare != null)
-                            _HoverIcon(
-                              icon: Icons.share_outlined,
-                              tooltip: "Share",
-                              onTap: onShare!,
-                            ),
+                            _HoverIcon(icon: Icons.share_outlined, tooltip: "Share", onTap: onShare!),
                         ],
                 ),
               ],
@@ -201,8 +191,7 @@ class ChatBubble extends StatelessWidget {
   }
 }
 
-/// ================= HOVER ICON WIDGET =================
-class _HoverIcon extends StatefulWidget {
+class _HoverIcon extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   final String tooltip;
@@ -214,40 +203,12 @@ class _HoverIcon extends StatefulWidget {
   });
 
   @override
-  State<_HoverIcon> createState() => _HoverIconState();
-}
-
-class _HoverIconState extends State<_HoverIcon> {
-  bool hovering = false;
-
-  @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Tooltip(
-      message: widget.tooltip,
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        onEnter: (_) => setState(() => hovering = true),
-        onExit: (_) => setState(() => hovering = false),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 120),
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: hovering
-                ? (isDark
-                    ? Colors.white.withOpacity(0.12)
-                    : Colors.black.withOpacity(0.08))
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            widget.icon,
-            size: 16,
-            color: isDark ? Colors.white70 : Colors.black87,
-          ),
-        ),
+      message: tooltip,
+      child: IconButton(
+        icon: Icon(icon, size: 16),
+        onPressed: onTap,
       ),
     );
   }

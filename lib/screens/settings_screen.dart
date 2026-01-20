@@ -37,14 +37,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
+
+      // ================= APPBAR (MATCHES CHATSCREEN) =================
       appBar: AppBar(
-        elevation: 0.5,
+        elevation: 0,
         centerTitle: true,
+        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Colors.deepPurple.shade600,
+                Colors.deepPurple.shade400,
+              ],
+            ),
+          ),
+        ),
         title: const Text(
           "Settings",
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
+
       body: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxWidth),
@@ -56,10 +72,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// ================= USER CARD =================
+
+                /// ================= USER CARD (LESS HEIGHT) =================
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 14, // <-- less height
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
                     gradient: LinearGradient(
@@ -72,7 +92,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: Row(
                     children: [
                       CircleAvatar(
-                        radius: 30,
+                        radius: 26,
                         backgroundColor: Colors.white,
                         child: Text(
                           currentUser?.email
@@ -86,7 +106,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 14),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,6 +126,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
                               ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
@@ -114,7 +135,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 32),
+                const SizedBox(height: 28), // <-- spacing after card
 
                 /// ================= CHAT SECTION =================
                 _sectionTitle("Chats"),
@@ -149,6 +170,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onTap: toggleTheme,
                     );
                   },
+                ),
+
+                const SizedBox(height: 28),
+
+                /// ================= APP INFO (NEW) =================
+                _sectionTitle("About"),
+                _settingsTile(
+                  icon: Icons.info_outline,
+                  title: "App Version",
+                  subtitle: "v1.0.0",
+                  onTap: () {},
+                ),
+                _settingsTile(
+                  icon: Icons.security_outlined,
+                  title: "Privacy Policy",
+                  subtitle: "Read our privacy policy",
+                  onTap: () {},
                 ),
 
                 const SizedBox(height: 28),
